@@ -11,12 +11,12 @@ namespace VisualObjectProjectR
     {
         int Row = 5, Col = 5, Bomb = 1;
         public Tarla[,] butonlar;
-
-        public Form2(int row, int colum, int bomb)
+        private Form1 form1;
+        public Form2(int row, int colum, int bomb,Form1 _form1)
         {
             InitializeComponent();
-
-            Row = row; Col = colum; Bomb = bomb;
+            
+            Row = row; Col = colum; Bomb = bomb; form1 = _form1;
             butonlar = new Tarla[Row, Col];
             
             
@@ -59,31 +59,44 @@ namespace VisualObjectProjectR
             {
                 int bombPlaceRow = random.Next(0, Row);
                 int bombPlaceCol = random.Next(0, Col);
-                butonlar[bombPlaceRow, bombPlaceCol].Value = -1; 
-
-
-                
-                for (int j = -1; j <= 1; j++)
+                if (butonlar[bombPlaceRow, bombPlaceCol].Value != -1)
                 {
-                    for (int k = -1; k <= 1; k++)
+                    bombPlacer(bombPlaceRow, bombPlaceCol);
+                }
+                else
+                {
+                    i--;
+                    continue;
+                }
+            }
+        }
+        public void bombPlacer(int bombPlaceRow,int bombPlaceCol)
+        {
+            
+            
+            butonlar[bombPlaceRow, bombPlaceCol].Value = -1;
+
+
+
+            for (int j = -1; j <= 1; j++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    int neighborRow = bombPlaceRow + j;
+                    int neighborCol = bombPlaceCol + k;
+
+
+
+                    if (neighborRow >= 0 && neighborRow < Row && neighborCol >= 0 && neighborCol < Col)
                     {
-                        int neighborRow = bombPlaceRow + j;
-                        int neighborCol = bombPlaceCol + k;
-
-                     
-
-                        if (neighborRow >= 0 && neighborRow < Row && neighborCol >= 0 && neighborCol < Col)
+                        if (butonlar[neighborRow, neighborCol].Value != -1)
                         {
-                            if (butonlar[neighborRow, neighborCol].Value != -1)
-                            {
-                                butonlar[neighborRow, neighborCol].Value++;
-                            }
+                            butonlar[neighborRow, neighborCol].Value++;
                         }
                     }
                 }
             }
-        }
-
+        } 
         private void Form2_Load(object sender, EventArgs e)
         {
            
@@ -113,7 +126,7 @@ namespace VisualObjectProjectR
                     button1.PerformClick();
                     MessageBox.Show("LOSE!", "Oyun Bitti", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     this.Close();
-                    Form1 form1 = new Form1();
+                   
                     form1.Visible=true;
 
                 }
@@ -174,7 +187,7 @@ namespace VisualObjectProjectR
                 MessageBox.Show("WİN!", "GAME OVER", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 this.Close();
-                Form1 form1 = new Form1();
+                
                 form1.Visible=true;
             }
         }

@@ -49,7 +49,7 @@ namespace VisualObjectProjectR
                 MessageBox.Show("Please check the varibles " , "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }else
             {
-                Form2 form2 = new Form2(row,col,bomb);
+                Form2 form2 = new Form2(row,col,bomb,this);
                 form2.Show();
                 this.Visible = false;
             }
