@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Security.AccessControl;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 
 namespace VisualObjectProjectR
@@ -15,13 +18,15 @@ namespace VisualObjectProjectR
 
             Row = row; Col = colum; Bomb = bomb;
             butonlar = new Tarla[Row, Col];
-
+            
+            
             TableLayoutPanel tableLayoutPanel = new TableLayoutPanel();
             tableLayoutPanel.AutoSize = true;
-            tableLayoutPanel.Location = new Point(10, 50);
+            tableLayoutPanel.Location = new Point(50, 150);
             tableLayoutPanel.ColumnCount = Col;
             tableLayoutPanel.RowCount = Row;
             tableLayoutPanel.Dock = DockStyle.Fill;
+            
 
             for (int i = 0; i < tableLayoutPanel.RowCount; i++)
             {
@@ -32,8 +37,8 @@ namespace VisualObjectProjectR
                 tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
             }
 
-            this.Controls.Add(tableLayoutPanel);
 
+            panel1.Controls.Add(tableLayoutPanel);
             for (int i = 0; i < Row; i++)
             {
                 for (int j = 0; j < Col; j++)
@@ -43,8 +48,8 @@ namespace VisualObjectProjectR
                     tarla.Dock = DockStyle.Fill;
                     tarla.Text = "  ";
                     tarla.Click += Button_Click;
-
-                    tableLayoutPanel.Controls.Add(tarla, j, i); 
+                   
+                    tableLayoutPanel.Controls.Add(tarla, i, j); 
                     butonlar[i, j] = tarla; 
                 }
             }
@@ -84,20 +89,38 @@ namespace VisualObjectProjectR
            
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            foreach (var item in butonlar)
+            {
+                item.Text = item.Value.ToString();
+            }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+     
         private void Button_Click(object sender, EventArgs e)
         {
             Tarla onclicked = sender as Tarla;
+            
             if (onclicked != null && !onclicked.IsOpened) 
             {
                 if (onclicked.Value == -1) 
                 {
+                    button1.PerformClick();
                     MessageBox.Show("LOSE!", "Oyun Bitti", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    Application.Exit(); 
+                    this.Close();
+                    Form1 form1 = new Form1();
+                    form1.Visible=true;
+
                 }
                 else
                 {
                     onclicked.open(); 
-
+                   
                     
                     if (onclicked.Value == 0)
                     {
@@ -124,6 +147,7 @@ namespace VisualObjectProjectR
             }
         }
 
+
         private void CheckWin()
         {
             bool allOpened = true;
@@ -145,8 +169,13 @@ namespace VisualObjectProjectR
 
             if (allOpened) 
             {
+                
+                button1.PerformClick();
                 MessageBox.Show("WİN!", "GAME OVER", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Application.Exit();
+
+                this.Close();
+                Form1 form1 = new Form1();
+                form1.Visible=true;
             }
         }
     }
@@ -192,7 +221,30 @@ namespace VisualObjectProjectR
         public void open()
         {
             this.Text = this.Value.ToString(); 
-            this.IsOpened = true; 
+            this.IsOpened = true;
+            this.BackColor= Color.LimeGreen;
         }
+
+        public event EventHandler RightClick;
+
+        protected override void OnMouseUp(MouseEventArgs mevent)
+        {
+            base.OnMouseUp(mevent);
+
+            // Sağ tıklamayı kontrol et
+            if (mevent.Button == MouseButtons.Right)
+            {
+                Belirt();
+                // Sağ tıklama olduğunda RightClick olayını tetikleyin
+                RightClick?.Invoke(this, EventArgs.Empty);
+
+            }
+        }
+        public void Belirt()
+        {
+            this.Image = SystemIcons.Warning.ToBitmap();
+        }
+
+        
     }
 }
